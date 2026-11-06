@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f3ece4">
+    <meta name="description" content="Eine versiegelte Hochzeitseinladung. Ein Quiz, dann das Save the Date ohne Get Together.">
+    <title>Versiegelte Einladung</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=10">
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true">
+      <div class="petals">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <main class="stage">
+      <article class="card" id="card">
+        <div class="card-frame" aria-hidden="true"></div>
+        <div class="progress-wrap" id="progress" hidden>
+          <p class="progress-label" id="progress-label">Frage 1 von 6</p>
+          <div
+            class="track"
+            role="progressbar"
+            aria-valuemin="1"
+            aria-valuemax="7"
+            aria-valuenow="1"
+            aria-labelledby="progress-label"
+          >
+            <span id="progress-bar"></span>
+          </div>
+        </div>
+        <div id="panel">
+          <noscript>
+            <style>.card { opacity: 1 !important; }</style>
+            <h1>Die Einladung ist versiegelt.</h1>
+            <p>Diese Seite braucht JavaScript, sonst bleibt das Siegel zu.</p>
+          </noscript>
+        </div>
+      </article>
+    </main>
+
+    <div id="home" hidden></div>
+    <canvas id="confetti" aria-hidden="true"></canvas>
+    <script src="script.js?v=12"></script>
+  </body>
+</html>
