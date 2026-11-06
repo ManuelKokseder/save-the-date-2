@@ -523,7 +523,7 @@ function renderFinale(celebrate) {
   home.innerHTML = `
     <section class="unveil${celebrate ? " is-entering" : ""}" id="unveil">
       <figure class="unveil-card">
-        <img src="save-the-date.jpg" alt="Save the Date. Rebecca und Manuel. Wir sagen Ja. Samstag, 7. August 2027. Weingut Klaus Lentsch, St. Pauls, Eppan.">
+        <img src="save-the-date.jpg?v=2" alt="Save the Date. Rebecca und Manuel. Wir sagen Ja. Samstag, 7. August 2027. Weingut Klaus Lentsch, St. Pauls, Eppan.">
       </figure>
     </section>
   `;
