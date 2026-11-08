@@ -455,7 +455,6 @@ function renderQuestion() {
   } else if (question.type === "color") {
     body = `
       <label class="field">
-        <span class="hint">Keine knalligen Farben, kein Rot, eher neutrale Farben.</span>
         <input class="text-input" id="color" type="text" maxlength="40" autocomplete="off" enterkeyhint="next" aria-labelledby="q-title" placeholder="Sand, Salbei, Taube …">
       </label>
     `;
