@@ -31,7 +31,7 @@ const ORTE = [
 
 const GERICHTE = ["Rind", "Fisch", "Vegetarisch", "Kindermenü"];
 
-const STORAGE_KEY = "versiegelte-einladung-v2";
+const STORAGE_KEY = "versiegelte-einladung-nur-hochzeit-v1";
 const LIST_KEY = "hochzeit-gaesteliste-v1";
 const SHEET_URL =
   "https://script.google.com/macros/s/AKfycbwT_rkA-9GpEWa6Y0HPDVwczlcZxswO3_sJdW2Mt2BdJzUISm-V7jjaVsCDBfo72j8F3w/exec";
@@ -77,7 +77,7 @@ const QUESTIONS = [
       {
         value: "ja",
         label: "Ja",
-        feedback: "Dann bist du nicht der/die einzige. Manu wird sowieso auch weinen — die Taschentücher liegen schon bereit.",
+        feedback: "Dann bist du nicht der/die Einzige. Manu wird sowieso auch weinen — die Taschentücher liegen schon bereit.",
       },
       {
         value: "nein",
@@ -211,7 +211,7 @@ const QUESTIONS = [
       },
       {
         value: "buffet",
-        label: "Irgendwann, Hauptsache Buffet",
+        label: "Irgendwann, Hauptsache Essen",
         feedback: "Falsche Antwort, aber du bist trotzdem eingeladen.",
       },
       {
@@ -303,21 +303,39 @@ function coupleNames() {
 
 const WHITE_WARNING =
   "STOPP. Weiß gehört der Braut — sonst kommst du nicht rein.";
+const BLACK_WARNING =
+  "Schwarz ist für eine Hochzeit etwas düster, hast du noch eine freundlichere Farbe?";
+const RED_WARNING =
+  "Rot lassen wir lieber weg. Hast du eine neutralere Farbe?";
 
-function isWhiteOutfit(raw) {
-  const folded = raw
+function foldOutfit(raw) {
+  return String(raw)
     .trim()
     .toLowerCase()
     .replace(/ß/g, "ss")
     .replace(/ä/g, "ae")
     .replace(/ö/g, "oe")
-    .replace(/ü/g, "ue");
-  return /weiss|white/.test(folded);
+    .replace(/ü/g, "ue")
+    .replace(/[^a-z]/g, "");
+}
+
+function isWhiteOutfit(raw) {
+  return /weiss|white/.test(foldOutfit(raw));
+}
+
+function isBlackOutfit(raw) {
+  return /schwarz|black/.test(foldOutfit(raw));
+}
+
+function isRedOutfit(raw) {
+  const folded = foldOutfit(raw);
+  if (/brot/.test(folded)) return false;
+  return /rot|red|bordeaux|burgunder|karmin|purpur|magenta|scharlach|zinnober/.test(folded);
 }
 
 function isPlausibleColor(raw) {
   const value = raw.trim();
-  return value.length >= 3 && /[a-zäöüß]/i.test(value) && !isWhiteOutfit(value);
+  return value.length >= 3 && /[a-zäöüß]/i.test(value) && !isWhiteOutfit(value) && !isBlackOutfit(value) && !isRedOutfit(value);
 }
 
 function currentQuestion() {
@@ -437,7 +455,8 @@ function renderQuestion() {
   } else if (question.type === "color") {
     body = `
       <label class="field">
-        <input class="text-input" id="color" type="text" maxlength="40" autocomplete="off" enterkeyhint="next" aria-labelledby="q-title" placeholder="Salbei, Bordeaux, Mitternachtsblau …">
+        <span class="hint">Keine knalligen Farben, kein Rot, eher neutrale Farben.</span>
+        <input class="text-input" id="color" type="text" maxlength="40" autocomplete="off" enterkeyhint="next" aria-labelledby="q-title" placeholder="Sand, Salbei, Taube …">
       </label>
     `;
   } else if (question.type === "scale") {
@@ -703,17 +722,21 @@ function syncColor(mode) {
   const input = panel.querySelector("#color");
   const value = input.value;
   state.answers.color = value;
-  const forbidden = value.trim() !== "" && isWhiteOutfit(value);
-  const enteredForbidden = forbidden && !input.classList.contains("is-forbidden");
-  input.classList.toggle("is-forbidden", forbidden);
-  input.setAttribute("aria-invalid", forbidden ? "true" : "false");
-  if (forbidden) {
-    applyFeedback(WHITE_WARNING, "is-alert", mode === "force" || (mode === "live" && enteredForbidden));
+  const white = value.trim() !== "" && isWhiteOutfit(value);
+  const black = value.trim() !== "" && isBlackOutfit(value);
+  const red = value.trim() !== "" && isRedOutfit(value);
+  const blocked = white || black || red;
+  const enteredBlocked = blocked && !input.classList.contains("is-forbidden");
+  input.classList.toggle("is-forbidden", blocked);
+  input.setAttribute("aria-invalid", blocked ? "true" : "false");
+  if (blocked) {
+    const warning = white ? WHITE_WARNING : black ? BLACK_WARNING : RED_WARNING;
+    applyFeedback(warning, "is-alert", mode === "force" || (mode === "live" && enteredBlocked));
     setNextEnabled(false);
     return;
   }
   if (isPlausibleColor(value)) {
-    applyFeedback("Notiert. Die Farbe darf mit.", "", false);
+    applyFeedback("Perfekt, das wird wunderschön.", "", false);
     setNextEnabled(true);
     return;
   }
@@ -789,8 +812,8 @@ function signalInvalid() {
   const question = currentQuestion();
   if (!question) return;
   if (question.type === "color") {
-    if (isWhiteOutfit(state.answers.color)) syncColor("force");
-    else applyFeedback("Eine Farbe muss es schon sein — zum Beispiel Salbei oder Bordeaux.", "", false);
+    if (isWhiteOutfit(state.answers.color) || isBlackOutfit(state.answers.color) || isRedOutfit(state.answers.color)) syncColor("force");
+    else applyFeedback("Eine Farbe muss es schon sein — zum Beispiel Salbei oder Sand.", "", false);
     panel.querySelector("#color")?.focus();
     return;
   }
@@ -1344,7 +1367,7 @@ function init() {
     updateTitle();
     return;
   }
-  if (loadUnlocked() && !isQuizView()) {
+  if (loadUnlocked()) {
     state.step = finaleStep();
     panel.dataset.shown = "1";
     renderFinale(false);
