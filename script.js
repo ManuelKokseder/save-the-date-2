@@ -544,6 +544,7 @@ function renderFinale(celebrate) {
       <figure class="unveil-card">
         <img src="save-the-date.jpg?v=2" alt="Save the Date. Rebecca und Manuel. Wir sagen Ja. Samstag, 7. August 2027. Weingut Klaus Lentsch, St. Pauls, Eppan.">
       </figure>
+      <button class="replay" type="button" data-action="replay">Quiz wiederholen</button>
     </section>
   `;
   document.body.classList.add("is-home", "is-card");
