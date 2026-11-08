@@ -359,7 +359,7 @@ function updateTitle() {
     document.title = `Gästeliste — ${names}`;
     return;
   }
-  document.title = state.step === finaleStep() ? `${HOCHZEIT.datumLabel} — ${names}` : `${names} — Versiegelte Einladung`;
+  document.title = "07.08";
 }
 
 function updateProgress() {
